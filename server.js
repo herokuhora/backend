@@ -40,13 +40,29 @@ admin.initializeApp({
 })
 
 // MongoDB Connection
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb+srv://codexsldev:06w0OnS9vQGtv76d@sapelaweddo.w9lxpvw.mongodb.net/?retryWrites=true&w=majority&appName=SapelaWeddo"
+
 mongoose
-  .connect("mongodb+srv://codexsldev:YOUR_NEW_PASSWORD@sapelaweddo.w9lxpvw.mongodb.net/sapelaweddo", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  .connect(MONGODB_URI)
+  .then(() => {
+    console.log("MongoDB Connected Successfully")
+    console.log("Database:", mongoose.connection.name)
   })
-  .then(() => console.log("MongoDB Connected Successfully"))
-  .catch((err) => console.error("MongoDB Connection Error:", err))
+  .catch((err) => {
+    console.error("MongoDB Connection Error:", err.message)
+    console.error("Please check your MONGODB_URI environment variable")
+    // Don't exit the process, let Render restart it
+  })
+
+// Handle MongoDB connection events
+mongoose.connection.on("disconnected", () => {
+  console.log("MongoDB disconnected. Attempting to reconnect...")
+})
+
+mongoose.connection.on("error", (err) => {
+  console.error("MongoDB connection error:", err.message)
+})
 
 // Import Routes
 const authRoutes = require("./routes/auth")
