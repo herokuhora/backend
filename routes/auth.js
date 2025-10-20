@@ -6,7 +6,7 @@ const { verifyToken } = require("../middleware/auth")
 // Register new student
 router.post("/register", verifyToken, async (req, res) => {
   try {
-    const { firebaseUid } = req.user
+    const firebaseUid = req.user.uid
 
     // Check if student already exists
     const existingStudent = await Student.findOne({ firebaseUid })
